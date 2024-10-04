@@ -8,11 +8,15 @@ pub fn build(b: *std.Build) !void {
 
     const dvui_sdl = addDvuiModule(b, target, optimize, .sdl);
     const dvui_raylib = addDvuiModule(b, target, optimize, .raylib);
+    const dvui_sfml = addDvuiModule(b, target, optimize, .sfml);
+    _ = dvui_sfml; // autofix
 
     addExample(b, target, optimize, "sdl-standalone", dvui_sdl);
     addExample(b, target, optimize, "sdl-ontop", dvui_sdl);
     addExample(b, target, optimize, "raylib-standalone", dvui_raylib);
     addExample(b, target, optimize, "raylib-ontop", dvui_raylib);
+
+    //addExample(b, target, optimize, "sfml-standalone", dvui_sfml);
 
     // web test
     {
@@ -95,6 +99,7 @@ pub fn build(b: *std.Build) !void {
 const Backend = enum {
     raylib,
     sdl,
+    sfml,
 };
 
 fn addDvuiModule(
@@ -120,9 +125,11 @@ fn addDvuiModule(
         .link_libc = switch (backend) {
             .raylib => true,
             .sdl => true,
+            .sfml => true,
         },
     });
     backend_mod.addImport("dvui", dvui_mod);
+    dvui_mod.addImport("backend", backend_mod);
     dvui_mod.addImport("backend", backend_mod);
 
     dvui_mod.addCSourceFiles(.{ .files = &.{
@@ -160,6 +167,15 @@ fn addDvuiModule(
                 if (sdl_dep) |sd| {
                     backend_mod.linkLibrary(sd.artifact("SDL2"));
                 }
+            }
+        },
+        .sfml => {
+            dvui_mod.addCSourceFiles(.{ .files = &.{
+                "src/stb/stb_image_impl.c",
+            } });
+            const maybe_sfml = b.lazyDependency("sfml", .{});
+            if (maybe_sfml) |sfml| {
+                dvui_mod.addImport("sfml", sfml.module("sfml"));
             }
         },
     }

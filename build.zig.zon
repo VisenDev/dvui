@@ -24,5 +24,10 @@
             .hash = "12205f060d3476715771890d6e30bc052ca2d420dcae7875db2a4bd876ac506008a9",
             .lazy = true,
         },
+        .sfml = .{
+            .url = "https://github.com/Guigui220D/zig-sfml-wrapper/archive/bf01202.tar.gz",
+            .hash = "1220711bf931da6bb89b3fa695f56dd938a749de9830fa479d850c279e3f739388db",
+            .lazy = true,
+        },
     },
 }
